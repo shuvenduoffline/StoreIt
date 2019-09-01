@@ -1,5 +1,6 @@
 package com.example.storeit;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +32,7 @@ public class HomeActivity extends AppCompatActivity {
     ArrayAdapter arrayAdapter;
     Button btnscan;
     ArrayList<String> dateList = new ArrayList<>();
+    private String TAG = "HomeActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,10 @@ public class HomeActivity extends AppCompatActivity {
                 startScan();
             }
         });
+
+        //assign the database
+        myDatabase = this.openOrCreateDatabase("Users", MODE_PRIVATE, null);
+        myDatabase.execSQL("CREATE TABLE IF NOT EXISTS usersdata (srno VARCHAR NOT NULL,details VARCHAR NOT NULL)");
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -81,6 +88,7 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+       // addtempitem();
         UpdateListView();
     }
 
@@ -131,6 +139,8 @@ public class HomeActivity extends AppCompatActivity {
                 dateList.add(id);
                 notes.add(result);
                 cc.moveToNext();
+
+                Log.d(TAG, "UpdateListView: "+result);
             }
 
         } catch (Exception e) {
@@ -138,70 +148,92 @@ public class HomeActivity extends AppCompatActivity {
         }
 
 
-        arrayAdapter = new ArrayAdapter(this, R.layout.item_list, notes);
+        arrayAdapter = new ArrayAdapter(this, R.layout.item_list,R.id.list_item_text, notes);
         listView.setAdapter(arrayAdapter);
     }
 
     protected void UpdateListViewWithResult(String scanresult) {
-        try {
 
-            myDatabase = this.openOrCreateDatabase("Users", MODE_PRIVATE, null);
+        String selectedid= null;
+        int slno = 1;
+        try{
+        myDatabase = this.openOrCreateDatabase("Users", MODE_PRIVATE, null);
 
-            myDatabase.execSQL("CREATE TABLE IF NOT EXISTS usersdata (srno VARCHAR NOT NULL,details VARCHAR NOT NULL)");
+        myDatabase.execSQL("CREATE TABLE IF NOT EXISTS usersdata (srno VARCHAR NOT NULL,details VARCHAR NOT NULL)");
 
 
-            Cursor cc = myDatabase.rawQuery("SELECT srno,details FROM usersdata", null);
-            int ccsrnoIndex = cc.getColumnIndex("srno");
-            int detailsIndex = cc.getColumnIndex("details");
+        Cursor cc = myDatabase.rawQuery("SELECT srno,details FROM usersdata", null);
+        int ccsrnoIndex = cc.getColumnIndex("srno");
+        int detailsIndex = cc.getColumnIndex("details");
 
-            notes.clear();
-            cc.moveToFirst();
-            int slno = 1;
-            String result;
-            String selectedid = null;
-            dateList.clear();
-            while (cc != null) {
+        notes.clear();
+        cc.moveToFirst();
+        String result;
+        dateList.clear();
+        while (cc != null) {
+            String id = cc.getString(ccsrnoIndex);
+            String details = cc.getString(detailsIndex);
 
-                String id = cc.getString(ccsrnoIndex);
-                String details = cc.getString(detailsIndex);
-
-                long time = Long.valueOf(id);
-                Date date = new Date(time);
-                result = Integer.toString(slno) + ": " + date.toString() + " \nDetails::  " + details;
-
-                if (details.equals(scanresult)) {
-                    selectedid = id;
-                    cc.moveToNext();
-                    continue;
-                }
-                dateList.add(id);
-                notes.add(result);
-                slno++;
-
+            long time = Long.valueOf(id);
+            Date date = new Date(time);
+            result = Integer.toString(slno) + ": " + date.toString() + " \nDetails::  " + details;
+            if (details.equals(scanresult)) {
+                selectedid = id;
                 cc.moveToNext();
-            }
-            if (selectedid == null) {
-                //its a new item add it to database
-                Date date = new Date();
-                String id = String.valueOf(date.getTime());
-                myDatabase.execSQL("INSERT INTO usersdata (slno,details) VALUES ('" + id + "','" + scanresult + ")");
-                dateList.add(id);
-                String tempresult = Integer.toString(slno) + ": " + id + " \nDetails::  " + scanresult;
-                notes.add(tempresult);
-                Toast.makeText(this, "Item Added!", Toast.LENGTH_SHORT).show();
-            } else {
-                //its an old item delete it
-                myDatabase.execSQL("DELETE FROM usersdata WHERE srno = '" + selectedid + "';");
-                Toast.makeText(this, "Item Removed!", Toast.LENGTH_SHORT).show();
+                continue;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+
+
+            dateList.add(id);
+            notes.add(result);
+            cc.moveToNext();
+
+            Log.d(TAG, "UpdateListView: "+result);
         }
 
+    } catch (Exception e) {
+        e.printStackTrace();
 
-        arrayAdapter = new ArrayAdapter(this, R.layout.item_list, notes);
+    }
+        if (selectedid == null) {
+            //its a new item add it to database
+            Date date = new Date();
+            String id = String.valueOf(date.getTime());
+            ContentValues values = new ContentValues();
+            values.put("srno",id);
+            values.put("details", scanresult);
+            myDatabase.insert("usersdata",null,values);
+            dateList.add(id);
+            String tempresult = Integer.toString(slno) + ": " + id + " \nDetails::  " + scanresult;
+            notes.add(tempresult);
+            Toast.makeText(this, "Item Added!", Toast.LENGTH_SHORT).show();
+        } else {
+            //its an old item delete it
+            myDatabase.execSQL("DELETE FROM usersdata WHERE srno = '" + selectedid + "';");
+            Toast.makeText(this, "Item Removed!", Toast.LENGTH_SHORT).show();
+        }
+
+        arrayAdapter = new ArrayAdapter(this, R.layout.item_list,R.id.list_item_text, notes);
         listView.setAdapter(arrayAdapter);
+    }
+    private void addtempitem(){
+        String id = String.valueOf(new Date().getTime());
+        String scanresult = "Piyus_Pranjal";
+        ContentValues values = new ContentValues();
+        values.put("srno",id);
+        values.put("details", scanresult);
+        myDatabase.insert("usersdata",null,values);
+        //Insert data
+
+        String id2 = String.valueOf(new Date().getTime()+100);
+        String scanresult2 = "Piyus_Pranjal_Amit";
+        ContentValues values1 = new ContentValues();
+        values1.put("srno",id2);
+        values1.put("details", scanresult2);
+        myDatabase.insert("usersdata",null,values1);
+
+        Log.d(TAG, "addtempitem: Temp item added");
     }
 
 }
