@@ -38,10 +38,9 @@ public class ScanResultAdapter extends FirestoreRecyclerAdapter<Items, ScanResul
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
         String res = " Item : " + model.getItem() + "\n" + "Qnt : " + model.getQuantity() + "\nDetails : " + model.getDetails() + "\n" + "Date : " + simpleDateFormat.format(model.getScanat());
         holder.details.setText(res);
-        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onLongClick(View view) {
-
+            public void onClick(View view) {
                 AlertDialog.Builder builder;
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     builder = new AlertDialog.Builder(baseactivity, android.R.style.Theme_Material_Dialog_Alert);
@@ -64,9 +63,10 @@ public class ScanResultAdapter extends FirestoreRecyclerAdapter<Items, ScanResul
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-                return false;
             }
         });
+
+
 
 
     }

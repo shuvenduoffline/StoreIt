@@ -1,9 +1,12 @@
 package com.example.storeit;
 
+import com.google.firebase.firestore.ServerTimestamp;
+
 import java.util.Date;
 
 public class Items {
-    Date scanat;
+    @ServerTimestamp
+    Date scanat = new Date();
     int quantity = 0;
     String details;
     String item;
@@ -48,6 +51,8 @@ public class Items {
     public Date getScanat() {
         return scanat;
     }
+
+
 
     public void setItem(String item) {
         this.item = item;

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "983656233330",
+    "firebase_url": "https://storeit-d8c7d.firebaseio.com",
+    "project_id": "storeit-d8c7d",
+    "storage_bucket": "storeit-d8c7d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:983656233330:android:54e456b5cae7e6ba4d05eb",
+        "android_client_info": {
+          "package_name": "com.example.storeit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "983656233330-75k62c2o6v7ind5emitfnac0m4ncrmth.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC21K-v6wdpJGw5IvzUKe_-Q942lkp6G7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "983656233330-75k62c2o6v7ind5emitfnac0m4ncrmth.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
