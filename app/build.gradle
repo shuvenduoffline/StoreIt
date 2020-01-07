@@ -4,10 +4,11 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.storeit"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -27,6 +28,19 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
+    //for firebase
+    //for firebase
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.google.firebase:firebase-auth:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth:16.0.1'
+    implementation 'com.firebaseui:firebase-ui-firestore:5.0.0'
+    implementation 'com.firebaseui:firebase-ui-storage:5.0.0'
+
     implementation 'com.edwardvanraak:MaterialBarcodeScanner:0.0.6-ALPHA'
     implementation 'com.google.firebase:firebase-ml-vision:19.0.2'
+
+    implementation 'android.arch.paging:runtime:1.0.1'
 }
+
+apply plugin: 'com.google.gms.google-services'
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
